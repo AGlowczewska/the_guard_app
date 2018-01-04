@@ -1,0 +1,15 @@
+
+{% load static %}
+{% include 'eleague/../parts/header.html' %}
+
+{% block content %}
+  <div class="container col-md-10 col-md-offset-1">
+      <p class="section_header">Sign Up</p>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+      <button type="submit" class="col-xs-12 search_btn btn btn-success ">Sign up</button>
+      </form>
+  <button class="col-xs-12 return_btn btn btn-default" onclick="goBack()">Go Back</button>
+  </div>
+{% endblock %}

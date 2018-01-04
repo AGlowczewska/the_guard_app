@@ -9,7 +9,7 @@
   if(Hls.isSupported()) {
     var video = document.getElementById('video');
     var hls = new Hls();
-    hls.loadSource('https://52.236.165.15.:80/hls/camera.m3u8');
+    hls.loadSource('http://52.236.165.15.:80/hls/test.m3u8');
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED,function() {
       video.play();
@@ -24,4 +24,9 @@
         myVideo.pause();
 }
 </script>
+
+            <div class="options">
+              <a class="btn btn-default col-md-6 col-xs-12 welcome-btn" href="{% url 'login' %}">Log in</a>
+              <a class="btn btn-default col-md-6 col-xs-12 welcome-btn" href="{% url 'signup' %}">Sign up</a>
+</div>
 </body>
