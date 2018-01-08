@@ -5,3 +5,43 @@ body{
 h1{
     text-align:center;
 }
+
+a{
+    text-decoration: none;
+    color: black;
+}
+a:hover{
+    color: black;
+    }
+
+#start_logo {
+    height: 50%;
+}
+
+#start_header {
+    text-align:center;
+}
+
+#login, #signup {
+    text-align: center;
+}
+
+.my_btn{
+    border: 3px solid black;
+    background-color: rgb(233,136,26);
+}
+
+.my_btn:hover, .my_btn:focus, .my_btn:active, .my_btn.active, .open>.dropdown-toggle.my_btn {
+    border: 3px solid black;
+    background-color: #e9541a;
+}
+
+.my_alert{
+    background-color: #e9541a;
+    border: 3px solid black;
+    font-weight: bold;
+}
+
+.my_alert p {
+    margin-bottom: 0 ;
+}

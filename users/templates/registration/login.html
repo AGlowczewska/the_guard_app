@@ -2,33 +2,50 @@
 {% block content %}
 
 
-  <div id="login">
-      <p>{{ msg }}</p>
+<div id="login">
 
 
-        <form class="form-horizontal" name="LoginForm" action="/login/" method="post">
+    <form class="form-horizontal" name="LoginForm" action="/login/" method="post">
         {% csrf_token %}
         {% if next %}
-            <input type="hidden" name="next" value="{{ next }}" />
+        <input type="hidden" name="next" value="{{ next }}"/>
         {% endif %}
-        <div class="control-group">
-            <label class="control-label" for="username">Email</label>
-            <div class="controls">
-                <input type="text" id="username" name="username"  placeholder="Email">
+
+        {% if msg %}
+        <div class="row">
+            <div class="col-md-2 offset-md-5 col-sm-10 offset-sm-1">
+                <div class="alert my_alert">
+                    <p>{{ msg }}</p>
+                </div>
             </div>
         </div>
-        <div class="control-group">
-            <label class="control-label" for="password">Password</label>
-            <div class="controls">
-                <input type="password" name="password" id="password" placeholder="Password">
+        {% endif %}
+        <div class="row">
+            <div class="col-md-2 offset-md-5 col-sm-10 offset-sm-1">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Email">
+                </div>
             </div>
         </div>
-        <div class="control-group">
-            <div class="controls">
-                <button type="submit" class="btn">Login</button>
+
+        <div class="row">
+            <div class="col-md-2 offset-md-5 col-sm-10 offset-sm-1">
+                <div class="form-group">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                </div>
             </div>
         </div>
-        </form>
-    </div>
+
+        <div class="row">
+            <div class="col-md-2 offset-md-5 col-sm-10 offset-sm-1">
+                <button type="submit" class="btn btn-block btn-warning btn-lg my_btn ">Login</button>
+            </div>
+        </div>
+
+    </form>
+
+    <p><a href="../signup/">Don't have account? <b>Register here!</b></a></p>
+</div>
+
 
 {% endblock content %}

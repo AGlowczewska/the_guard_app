@@ -1,40 +1,36 @@
 {% load static %}
 {% include 'the_guard_app/../parts/header.html' %}
 
+
 <body>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<video id="video" onclick="playPause()"></video>
-<script>
-  if(Hls.isSupported()) {
-    var video = document.getElementById('video');
-    var hls = new Hls();
-    hls.loadSource('http://52.236.165.15.:80/hls/test.m3u8');
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED,function() {
-      video.play();
-  });
- }
- var myVideo = document.getElementById("video");
 
- function playPause() {
-    if (myVideo.paused)
-        myVideo.play();
-    else
-        myVideo.pause();
-}
-</script>
-
-{% if user.is_authenticated %}
     <p>Welcome {{ user.username }} !!!</p>
     <a class="btn btn-default col-md-6 col-xs-12 welcome-btn" href="{% url 'logout' %}">Log out</a>
-{% else %}
-
-<div class="options">
-    <a class="btn btn-default col-md-6 col-xs-12 welcome-btn" href="{% url 'login' %}">Log in</a>
-    <a class="btn btn-default col-md-6 col-xs-12 welcome-btn" href="{% url 'signup' %}">Sign up</a>
-</div>
 
 
-{% endif %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <video id="video" onclick="playPause()"></video>
+    <script>
+      if(Hls.isSupported()) {
+        var video = document.getElementById('video');
+        var hls = new Hls();
+        hls.loadSource('http://52.236.165.15.:80/hls/test.m3u8');
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED,function() {
+          video.play();
+      });
+     }
+     var myVideo = document.getElementById("video");
+
+     function playPause() {
+        if (myVideo.paused)
+            myVideo.play();
+        else
+            myVideo.pause();
+    }
+    </script>
+
 </body>
