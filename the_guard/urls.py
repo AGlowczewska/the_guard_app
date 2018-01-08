@@ -21,8 +21,8 @@ from users import views as users_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^login/$', auth_views.login, name='login'),
-    url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^login/$', users_views.login_user, name='login'),
+    url(r'^logout/$', users_views.logout_user, name='logout'),
     url(r'^signup/$', users_views.signup, name='signup'),
     url('', include('the_guard_app.urls')),
     url('the_guard', include('the_guard_app.urls')),

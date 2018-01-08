@@ -1,15 +1,32 @@
-
-{% load static %}
-{% include 'eleague/../parts/header.html' %}
-
+{% extends "user_base.html" %}
 {% block content %}
-  <div class="container col-md-10 col-md-offset-1">
-      <p class="section_header">Sign Up</p>
-      <form method="post">
+
+<div id="signup">
+      <p>{{ msg }}</p>
+
+
+        <form class="form-horizontal" name="SignUpForm" action="/signup/" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-      <button type="submit" class="col-xs-12 search_btn btn btn-success ">Sign up</button>
-      </form>
-  <button class="col-xs-12 return_btn btn btn-default" onclick="goBack()">Go Back</button>
-  </div>
-{% endblock %}
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}" />
+        {% endif %}
+        <div class="control-group">
+            <label class="control-label" for="username">Email</label>
+            <div class="controls">
+                <input type="text" id="username" name="username"  placeholder="Email">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="password">Password</label>
+            <div class="controls">
+                <input type="password" name="password" id="password" placeholder="Password">
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn">Sign Up</button>
+            </div>
+        </div>
+        </form>
+    </div>
+{% endblock content %}
