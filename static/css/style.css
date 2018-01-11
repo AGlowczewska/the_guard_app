@@ -45,3 +45,7 @@ a:hover{
 .my_alert p {
     margin-bottom: 0 ;
 }
+
+#head_name{
+    margin: 5px;
+}

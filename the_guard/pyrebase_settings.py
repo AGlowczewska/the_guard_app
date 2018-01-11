@@ -14,7 +14,5 @@ firebase = pyrebase.initialize_app(config)
 
 # authenticate a user
 auth = firebase.auth()
-auth.sign_in_with_email_and_password('ola.glowczewska95@gmail.com', 'slonik6')
-# token = auth.create_custom_token("your_custom_id")
 
 db = firebase.database()

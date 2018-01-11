@@ -4,16 +4,29 @@
 
 <body>
 
+<div class="row">
+    <p class="col-md-3 col-sm-10 offset-sm-1">Welcome {{ user.username }} !!!</p>
+    <button class="btn btn-default col-md-2 offset-md-5 col-sm-10 offset-sm-1 my_btn">
+        <a href="{% url 'logout' %}">Log out</a>
+    </button>
 
-    <p>Welcome {{ user.username }} !!!</p>
-    <a class="btn btn-default col-md-6 col-xs-12 welcome-btn" href="{% url 'logout' %}">Log out</a>
+</div>
 
 
+<ol>
+{% for key, value in rooms.items %}
+<li>{{key}}</li>
+    <ul>
+        {% for sensor, value2 in value.items %}
+            <li>{{sensor}} : {{ value2.value}}</li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+</ol>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <video id="video" onclick="playPause()"></video>
-    <script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<video id="video" onclick="playPause()"></video>
+<script>
       if(Hls.isSupported()) {
         var video = document.getElementById('video');
         var hls = new Hls();
@@ -31,6 +44,23 @@
         else
             myVideo.pause();
     }
-    </script>
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+<script>
+  var config = {
+    apiKey: "AIzaSyCHL_Er9JtpQbadJtoaZbvYusIY-tBRVC0",
+    authDomain: "guardapp-ac65a.firebaseapp.com",
+    databaseURL: "https://guardapp-ac65a.firebaseio.com",
+    storageBucket: "guardapp-ac65a.appspot.com",
+    messagingSenderId: "299985780377"
+  };
+  firebase.initializeApp(config);
+  var db = firebase.database();
+  var rooms = db.ref('sensors/');
+  rooms.on('value', function(snapshot) {
+    console.log(snapshot.val());
+     });
+  </script>
 
 </body>
