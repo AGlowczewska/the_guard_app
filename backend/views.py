@@ -54,8 +54,8 @@ def get_test_address(request):
 def register_rasp(request):
     context = {}
     if request.method == 'POST':
-        serial = request.POST['serial']
-        token = request.POST['token']
+        serial = request.POST.get('serial')
+        token = request.POST.get('token')
         auth.get_account_info(token)
         add_cam_to_db(serial, "", "Camera")
         context = {'msg': 'Successfully added to the database'}
