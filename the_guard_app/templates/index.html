@@ -1,6 +1,20 @@
 {% load static %}
 {% include 'the_guard_app/../parts/header.html' %}
 
+<style>
+.parent{
+	position:relative;
+}
+.childtext{
+	position:absolute;
+	top: 50%;
+	transform:translateY(-50%);
+}
+.my_btn{
+	margin-bottom: 5px;
+}
+</style>
+
 
 <body>
 
@@ -13,16 +27,21 @@
 </div>
 
 
-<ol>
+<div class='camera col-md-2'>
 {% for key, value in rooms.items %}
-<li>{{key}}</li>
-    <ul>
+<button class="btn btn-default col-md-10 offset-md-1 my_btn">
+<div class="row parent">
+<img class ="col-md-4" src="{% static 'pics/camera.png' %}" />
+	<h4 class = "childtext col-md-8" >{{key}}</h4>
+</div>
+</button>
+<!--    <ul>
         {% for sensor, value2 in value.items %}
             <li>{{sensor}} : {{ value2.value}}</li>
         {% endfor %}
-    </ul>
+    </ul> -->
 {% endfor %}
-</ol>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <video id="video" onclick="playPause()"></video>
