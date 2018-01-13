@@ -1,13 +1,22 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from the_guard.pyrebase_settings import db
 from django.http import HttpRequest
 
 
+@login_required
+def rasp_view(request, rasp_serial):
+    context = {}
+    rooms = db.child("sensor").get()
+    print(rooms.val())  # users
+    context = {'rooms': rooms.val()}
+    return render(request, 'parts/data_area.html', context)
+
+
 def index(request):
     context = {}
     if request.user.is_authenticated():
-
         rooms = db.child("sensor").get()
         print(rooms.val())  # users
         context = {'rooms': rooms.val()}

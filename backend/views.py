@@ -1,10 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 import json
 from backend.models import Rasps
-
+from the_guard.pyrebase_settings import db, auth
 
 def delete_rasp_from_db(serial_nr):
     try:
@@ -48,11 +49,14 @@ def get_test_address(request):
         return HttpResponse(dump, content_type="application/json")
 
 
-@login_required
+@api_view(['POST'])
+@csrf_exempt
 def register_rasp(request):
     context = {}
     if request.method == 'POST':
         serial = request.POST['serial']
+        token = request.POST['token']
+        auth.get_account_info(token)
         add_cam_to_db(serial, "", "Camera")
         context = {'msg': 'Successfully added to the database'}
         return render(request, 'rasp_edit.html', context)

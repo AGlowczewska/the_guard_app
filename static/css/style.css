@@ -18,7 +18,7 @@ a:hover{
     height: 50%;
 }
 
-#start_header {
+#start_header, .centered {
     text-align:center;
 }
 
@@ -29,6 +29,7 @@ a:hover{
 .my_btn{
     border: 3px solid black;
     background-color: rgb(233,136,26);
+    margin-bottom: 5px;
 }
 
 .my_btn:hover, .my_btn:focus, .my_btn:active, .my_btn.active, .open>.dropdown-toggle.my_btn {
@@ -48,4 +49,22 @@ a:hover{
 
 #head_name{
     margin: 5px;
+}
+
+.btn_camera_logo{
+    width:100% ;
+}
+
+#video{
+    max-height: 50%;
+}
+
+.parent{
+	position:relative;
+}
+
+.childtext{
+	position:absolute;
+	top: 50%;
+	transform:translateY(-50%);
 }
