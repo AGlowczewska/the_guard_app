@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from rest_framework.decorators import api_view
@@ -115,3 +116,8 @@ def sensors_update(request, format=json):
 def delete_rasp(request):
     if request.method == 'POST':
         return
+=======
+`from django.shortcuts import render
+
+# Create your views here.
+>>>>>>> 0ab28e39f101ea93b60de9b31bcb651f01454fd7

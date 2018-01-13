@@ -8,7 +8,7 @@ def index(request):
     context = {}
     if request.user.is_authenticated():
 
-        rooms = db.child("sensors").get()
+        rooms = db.child("sensor").get()
         print(rooms.val())  # users
         context = {'rooms': rooms.val()}
         # stream = db.child("sensors").stream(stream_handler)
