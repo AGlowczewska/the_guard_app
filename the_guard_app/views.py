@@ -11,7 +11,7 @@ def index(request):
         rooms = db.child("sensors").get()
         print(rooms.val())  # users
         context = {'rooms': rooms.val()}
-        stream = db.child("sensors").stream(stream_handler)
+        # stream = db.child("sensors").stream(stream_handler)
         return render(request, 'index.html', context)
     else:
         return render(request, 'registration/login.html', context)

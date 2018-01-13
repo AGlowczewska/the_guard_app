@@ -4,7 +4,7 @@
 <div id="signup">
 
 
-    <form class="form-horizontal" name="SignUpForm" action="/signup/" method="post">
+    <form class="form-horizontal" action="/signup/" method="post">
         {% csrf_token %}
         {% if next %}
         <input type="hidden" name="next" value="{{ next }}"/>

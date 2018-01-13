@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
+    'backend.apps.BackendConfig',
     'users.apps.UsersConfig',
     'the_guard_app.apps.TheGuardAppConfig',
     'django.contrib.admin',

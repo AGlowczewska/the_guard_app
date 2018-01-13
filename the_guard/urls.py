@@ -24,7 +24,8 @@ urlpatterns = [
     url(r'^login/$', users_views.login_user, name='login'),
     url(r'^logout/$', users_views.logout_user, name='logout'),
     url(r'^signup/$', users_views.signup, name='signup'),
+    url(r'^backend/', include('backend.urls')),
+    url(r'^the_guard/', include('the_guard_app.urls')),
     url('', include('the_guard_app.urls')),
-    url('the_guard', include('the_guard_app.urls')),
 ]
 

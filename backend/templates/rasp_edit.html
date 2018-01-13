@@ -1,0 +1,28 @@
+<div id="register_rasp">
+
+
+    <form class="form-horizontal" action="/backend/v1/add_raspberry/" method="post">
+        {% csrf_token %}
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}"/>
+        {% endif %}
+
+        {% if msg %}<div class="row">
+            <div class="col-md-2 offset-md-5 col-sm-10 offset-sm-1">
+                <div class="alert my_alert">
+                    <p>{{ msg }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
+        <input type="text" class="form-control" id="serial" name="serial" placeholder="Serial No">
+        <input type="text" class="form-control" id="owner" name="serial" placeholder="Owner">
+
+
+        <button type="submit" class="btn btn-block btn-warning btn-lg my_btn ">Register</button>
+
+    </form>
+
+</div>

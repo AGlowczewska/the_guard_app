@@ -2,7 +2,6 @@ from django.shortcuts import render, render_to_response
 from django.contrib.auth import login, authenticate, logout
 from django.template import RequestContext
 
-from users.forms import SignUpForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
