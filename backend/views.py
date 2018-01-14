@@ -38,12 +38,12 @@ def filter_devices(owner):
     return data
 
 
-def set_camera_owner(owner, serial_nr):
-    rasp = Rasps.objects.get(serial=serial_nr)
-    rasp.owner = owner
-    rasp.save()
+def change_device_ownership(owner, serial_nr):
+    device = Rasps.objects.get(serial=serial_nr)
+    device.owner = owner
+    device.save()
 
-    print("Updated object: {0}".format(rasp))
+    print("Updated object: {0}".format(device))
     return
 
 
@@ -111,8 +111,8 @@ def assign_device_to_owner(request):
         owner = body['owner']
         authorize_request(body['token'])
 
-        set_camera_owner(owner, serial)
-        context = {'msg': 'Successfully updated to the database'}
+        change_device_ownership(owner, serial)
+        context = {'msg': 'Ownership successfully changed'}
 
         return render(request, 'rasp_edit.html', context)
     return render(request, 'rasp_edit.html', context)
