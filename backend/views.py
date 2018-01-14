@@ -5,7 +5,15 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 import json
 from backend.models import Rasps
-from the_guard.pyrebase_settings import db, auth
+from the_guard.pyrebase_settings import db
+import firebase_admin
+import os
+from firebase_admin import credentials, auth
+
+def initialize_firebase_admin():
+    print(os.getcwd())
+    cred = credentials.Certificate("serviceAccountKey.json")
+    firebase_admin.initialize_app(cred)
 
 def delete_rasp_from_db(serial_nr):
     try:
@@ -49,14 +57,24 @@ def get_test_address(request):
         return HttpResponse(dump, content_type="application/json")
 
 
+# PATH /backend/v1/add_raspberry/
 @api_view(['POST'])
 @csrf_exempt
 def register_rasp(request):
     context = {}
     if request.method == 'POST':
-        serial = request.POST.get('serial')
-        token = request.POST.get('token')
-        auth.get_account_info(token)
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        token = body['token']
+        serial = body['serial']
+
+        initialize_firebase_admin()
+        decoded_token = auth.verify_id_token(token)
+        uid = decoded_token['uid']
+
+        print('Token: {0}'.format(uid))
+        #auth.get_account_info(token)
+
         add_cam_to_db(serial, "", "Camera")
         context = {'msg': 'Successfully added to the database'}
         return render(request, 'rasp_edit.html', context)
