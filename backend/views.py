@@ -1,39 +1,34 @@
-from django.contrib.auth.decorators import login_required
+import json
+
+import firebase_admin
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
-from django.http import HttpResponse
-import json
-from backend.models import Rasps
-from the_guard.pyrebase_settings import db
-import firebase_admin
-import os
 from firebase_admin import credentials, auth
+from rest_framework.decorators import api_view
 
-def initialize_firebase_admin():
-    print(os.getcwd())
+from backend.models import Rasps
+
+
+def initialize_firebase_admin_sdk():
     cred = credentials.Certificate("serviceAccountKey.json")
     firebase_admin.initialize_app(cred)
 
-def delete_rasp_from_db(serial_nr):
-    try:
-        rasp = Rasps.objects.get(serial=serial_nr)
-        rasp.delete()
-        print("Object {0} has been deleted".format(rasp))
-        return True
-    except Rasps.DoesNotExist:
-        print("User does not exist")
-        return False
+
+def authorize_request(token):
+    initialize_firebase_admin_sdk()
+    decoded_token = auth.verify_id_token(token)
+    print("Verified token: {}".format(decoded_token))
 
 
-def add_cam_to_db(serial, owner, name):
+def add_device_to_database(serial, owner, name):
     camera = Rasps(serial=serial, owner=owner, name=name)
     camera.save()
     print("Added Camera to DB: serial: {} owner: {} name: {}".format(serial, owner, name))
     return
 
 
-def get_camera_owner(owner):
+def filter_devices(owner):
     print("Get Cameras by Owner: {}".format(owner))
     data = Rasps.objects.filter(owner=owner)
     return data
@@ -49,15 +44,16 @@ def set_camera_owner(owner, serial_nr):
 
 
 # PATH: /backend/v1/camera_address/
-@api_view(['GET'])
+@api_view(['POST'])
+@csrf_exempt
 def get_test_address(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = {"id": "http://52.236.165.15:80/hls/test.m3u8"}
         dump = json.dumps(data)
         return HttpResponse(dump, content_type="application/json")
 
 
-# PATH /backend/v1/add_raspberry/
+# PATH /backend/v1/devices/add/
 @api_view(['POST'])
 @csrf_exempt
 def register_rasp(request):
@@ -65,75 +61,54 @@ def register_rasp(request):
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-        token = body['token']
         serial = body['serial']
 
-        initialize_firebase_admin()
-        decoded_token = auth.verify_id_token(token)
-        uid = decoded_token['uid']
+        authorize_request(body['token'])
 
-        print('Token: {0}'.format(uid))
-        #auth.get_account_info(token)
-
-        add_cam_to_db(serial, "", "Camera")
+        add_device_to_database(serial, "", "Camera")
         context = {'msg': 'Successfully added to the database'}
         return render(request, 'rasp_edit.html', context)
     return render(request, 'rasp_edit.html', context)
 
 
-# PATH: /backend/v1/get_cameras/<owner>/
-@api_view(['GET'])
-def get_rasps(request):
-    if request.method == 'GET':
-        # read owner from request
-        owner = request.GET['owner']
-        # receive list of his rasps
-        cameras_list = get_camera_owner(owner)
-        rasp_ids = []
-        for camera in cameras_list:
-            temp = {'id': camera.id, 'name': camera.name}
-            rasp_ids.append(temp)
+# PATH: /backend/v1/devices
+@api_view(['POST'])
+@csrf_exempt
+def get_devices_for_owner(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
 
-        json_data = json.dumps(rasp_ids)
+        owner = body['owner']
+        authorize_request(body['token'])
+
+        camera_list = filter_devices(owner)
+
+        device_list = []
+        for camera in camera_list:
+            device = {'id': camera.id, 'name': camera.name}
+            device_list.append(device)
+
+        json_data = json.dumps(device_list)
         json_data = str(json_data)
         return HttpResponse(json_data, content_type="application/json")
 
 
-# PATH: /backend/v1/connect/
+# PATH: /backend/v1/devices/assign
 @api_view(['POST'])
-def connect_rasp_with_user(request):
+@csrf_exempt
+def assign_device_to_owner(request):
     context = {}
     if request.method == 'POST':
-        # receive from json user and rasp serial
-        serial = request.POST['serial']
-        owner = request.POST['owner']
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        serial = body['serial']
+        owner = body['owner']
+        authorize_request(body['token'])
+
         set_camera_owner(owner, serial)
         context = {'msg': 'Successfully updated to the database'}
+
         return render(request, 'rasp_edit.html', context)
     return render(request, 'rasp_edit.html', context)
-
-
-# TO DO BELOW
-
-
-
-
-
-@api_view(['POST'])
-def sensors_update(request, format=json):
-    if request.method == 'POST':
-        b_json = request.body.decode('utf-8')
-        data_json = json.loads(b_json)
-        owner = data_json['email']
-        raspberry = data_json['serial']
-        # get devices connected with raspi
-        # send to firebase POST request with data: devicesIDs and sensor data
-        # send back 200
-        return
-
-
-# PATH: /v1/delete
-@api_view(['POST'])
-def delete_rasp(request):
-    if request.method == 'POST':
-        return
