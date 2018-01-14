@@ -2,15 +2,19 @@
 
 {% block content %}
 
+<h1>{{name}}</h1>
+
 <video id="video" onclick="playPause()"></video>
 
-<div class="row">
+<div class="row centered">
     {% for key, value in rooms.items %}
-    <ul>
+    {% if key == name %}
+    <ul class="sensor_list">
         {% for sensor, value2 in value.items %}
         <li>{{sensor}} : {{ value2.value}}</li>
         {% endfor %}
     </ul>
+    {% endif %}
     {% endfor %}
 </div>
 

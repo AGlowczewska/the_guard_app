@@ -68,3 +68,12 @@ a:hover{
 	top: 50%;
 	transform:translateY(-50%);
 }
+
+.sensor_list {
+    margin: auto;
+    padding: 10px;
+}
+
+#main_row {
+    margin-top: 20px;
+}
