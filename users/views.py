@@ -1,11 +1,8 @@
-from django.shortcuts import render, render_to_response
 from django.contrib.auth import login, authenticate, logout
-from django.template import RequestContext
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from the_guard.pyrebase_settings import db, auth
+from the_guard.pyrebase_settings import auth
 import json
 
 

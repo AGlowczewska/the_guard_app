@@ -17,7 +17,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
-         <button type="button" class="btn btn-default" data-dismiss="modal">Check it!</button>
+         <a role="button" class="btn btn-default" id="modal_button" href="#">Check it!</a>
       </div>
     </div>
 
@@ -41,7 +41,7 @@
                 <a href="/rasp/{{key}}/"> <span class="link_button"> </span></a>
                 <div class="col-md-4"><img class="btn_camera_logo" src="{% static 'pics/camera.png' %}"/></div>
                 <div class="col-md-8">
-                    <h4 class="childtext">{{key}}</h4>
+                    <h4 class="childtext keys">{{key}}</h4>
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
 
         <div class="btn btn-default col-md-10 offset-md-1 my_btn">
             <div class="row parent">
-                <a href="/connect/"> <span class="test"> </span></a>
+                <a href="/connect/"> <span class="link_button"> </span></a>
                 <div class="col-md-4"><img class="btn_camera_logo" src="{% static 'pics/camera.png' %}"/></div>
                 <div class="col-md-8">
                     <h4 class="childtext"> Connect rasp </h4>
@@ -59,7 +59,7 @@
         </div>
 
     </div>
-    <div class='camera col-md-9 centered'>
+    <div class='camera col-md-8 centered'>
 
     {% block content %}
     {% endblock content %}
@@ -67,53 +67,9 @@
     </div>
 
 </div>
-<script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+
 <script>
-  var config = {
-    apiKey: "AIzaSyCHL_Er9JtpQbadJtoaZbvYusIY-tBRVC0",
-    authDomain: "guardapp-ac65a.firebaseapp.com",
-    databaseURL: "https://guardapp-ac65a.firebaseio.com",
-    storageBucket: "guardapp-ac65a.appspot.com",
-    messagingSenderId: "299985780377"
-  };
 
-  firebase.initializeApp(config);
-  var db = firebase.database();
-  var rooms = db.ref('sensor/');
-  previous = 0;
-
-  rooms.on('value', function(snapshot) {
-    data = snapshot.val();
-    data1 = snapshot.val();
-    name = Object.keys(data)[0];
-
-    {% for key, value in rooms.items %}
-        if( name == '{{key}}' ) {
-            data = Object.values(data)[0];
-            if (typeof previous.COSensor !== 'undefined'){
-
-                for (sensor_name in data) {
-                    val1 = Object.values(previous[sensor_name])[0];
-                    val2 = Object.values(data[sensor_name])[0];
-                    if ( val1 < val2) {
-                        console.log('Danger in' , sensor_name);
-                        changed_sensor = sensor_name;
-                        $("#danger_title").text("Danger in " + name);
-                        $('#danger_sensor').text("Sensor name: " + changed_sensor);
-                        $('#danger_previous').text("Previous value: " + val1);
-                        $('#danger_current').text("Current value: " + val2);
-                        $('#alert_modal').modal('show');
-                        }
-                    }
-
-             }
-             previous = data;
-        }
-    {% endfor %}
-
-
-     });
-
-
+listen_to_changes();
 </script>
 </body>

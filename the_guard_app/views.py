@@ -1,14 +1,15 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from the_guard.pyrebase_settings import db
-from django.http import HttpRequest
+
+
+def user_rasps():
+    return db.child("sensor").get()
 
 
 @login_required
 def rasp_view(request, rasp_serial):
-    context = {}
-    rooms = db.child("sensor").get()
+    rooms = user_rasps()
 
     context = {'rooms': rooms.val(), 'name': rasp_serial}
     return render(request, 'parts/data_area.html', context)
@@ -17,7 +18,7 @@ def rasp_view(request, rasp_serial):
 def index(request):
     context = {}
     if request.user.is_authenticated():
-        rooms = db.child("sensor").get()
+        rooms = user_rasps()
         print(rooms.val())
         context = {'rooms': rooms.val()}
         # stream = db.child("sensors").stream(stream_handler)
@@ -26,6 +27,18 @@ def index(request):
         return render(request, 'registration/login.html', context)
 
 
+def connect_rasp(request):
+    rooms = user_rasps()
+    context = {'rooms': rooms.val()}
+
+    if request.method == 'POST':
+        serial = request.POST['serial']
+        context['serial'] = serial
+
+        # adding to db
+        return render(request, 'parts/add_rasp.html', context)
+
+    return render(request, 'parts/add_rasp.html', context)
 
 
 def stream_handler(message):
