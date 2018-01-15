@@ -9,8 +9,8 @@ from django.http import HttpRequest
 def rasp_view(request, rasp_serial):
     context = {}
     rooms = db.child("sensor").get()
-    print(rooms.val())  # users
-    context = {'rooms': rooms.val()}
+
+    context = {'rooms': rooms.val(), 'name': rasp_serial}
     return render(request, 'parts/data_area.html', context)
 
 
@@ -18,12 +18,14 @@ def index(request):
     context = {}
     if request.user.is_authenticated():
         rooms = db.child("sensor").get()
-        print(rooms.val())  # users
+        print(rooms.val())
         context = {'rooms': rooms.val()}
         # stream = db.child("sensors").stream(stream_handler)
         return render(request, 'index.html', context)
     else:
         return render(request, 'registration/login.html', context)
+
+
 
 
 def stream_handler(message):

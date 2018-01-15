@@ -2,15 +2,19 @@
 
 {% block content %}
 
+<h1>{{name}}</h1>
+
 <video id="video" onclick="playPause()"></video>
 
-<div class="row">
+<div class="row centered">
     {% for key, value in rooms.items %}
-    <ul>
+    {% if key == name %}
+    <ul class="sensor_list">
         {% for sensor, value2 in value.items %}
         <li>{{sensor}} : {{ value2.value}}</li>
         {% endfor %}
     </ul>
+    {% endif %}
     {% endfor %}
 </div>
 
@@ -36,24 +40,6 @@
             myVideo.pause();
     }
 
-
-
-</script>
-<script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
-<script>
-  var config = {
-    apiKey: "AIzaSyCHL_Er9JtpQbadJtoaZbvYusIY-tBRVC0",
-    authDomain: "guardapp-ac65a.firebaseapp.com",
-    databaseURL: "https://guardapp-ac65a.firebaseio.com",
-    storageBucket: "guardapp-ac65a.appspot.com",
-    messagingSenderId: "299985780377"
-  };
-  firebase.initializeApp(config);
-  var db = firebase.database();
-  var rooms = db.ref('sensors/');
-  rooms.on('value', function(snapshot) {
-    console.log(snapshot.val());
-     });
 
 
 </script>

@@ -1,31 +1,65 @@
 {% load static %}
 {% include 'the_guard_app/../parts/header.html' %}
 
+<div id="alert_modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content" id="danger_content">
+      <div class="modal-header" id="danger_header">
+        <h1 class="modal-title" id="danger_title">Danger</h1>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="danger_body">
+          <h3 id="danger_sensor">Sensor name</h3>
+          <p id="danger_previous">Previous value</p>
+          <p id="danger_current">Current value</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
+         <button type="button" class="btn btn-default" data-dismiss="modal">Check it!</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <body>
 
 <div class="row">
     <p class="col-md-3 col-sm-10 offset-sm-1">Welcome {{ user.username }} !!!</p>
-    <div class="btn btn-default col-md-2 offset-md-5 col-sm-10 offset-sm-1 my_btn">
-        <a href="{% url 'logout' %}">Log out</a>
-    </div>
+    <a role='button' class="btn btn-default col-md-2 offset-md-5 col-sm-10 offset-sm-1 my_btn" href="{% url 'logout' %}">Log out
+    </a>
 
 </div>
 
-<div class="row">
-    <div class='camera col-md-2'>
+<div class="row" id="main_row">
+    <div class='camera col-md-3'>
         {% for key, value in rooms.items %}
-        <button class="btn btn-default col-md-10 offset-md-1 my_btn">
+        <div class="btn btn-default col-md-10 offset-md-1 my_btn">
             <div class="row parent">
+                <a href="/rasp/{{key}}/"> <span class="link_button"> </span></a>
                 <div class="col-md-4"><img class="btn_camera_logo" src="{% static 'pics/camera.png' %}"/></div>
                 <div class="col-md-8">
                     <h4 class="childtext">{{key}}</h4>
                 </div>
             </div>
-        </button>
+        </div>
 
         {% endfor %}
+
+        <div class="btn btn-default col-md-10 offset-md-1 my_btn">
+            <div class="row parent">
+                <a href="/connect/"> <span class="test"> </span></a>
+                <div class="col-md-4"><img class="btn_camera_logo" src="{% static 'pics/camera.png' %}"/></div>
+                <div class="col-md-8">
+                    <h4 class="childtext"> Connect rasp </h4>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <div class='camera col-md-10 centered'>
+    <div class='camera col-md-9 centered'>
 
     {% block content %}
     {% endblock content %}
@@ -33,5 +67,53 @@
     </div>
 
 </div>
+<script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+<script>
+  var config = {
+    apiKey: "AIzaSyCHL_Er9JtpQbadJtoaZbvYusIY-tBRVC0",
+    authDomain: "guardapp-ac65a.firebaseapp.com",
+    databaseURL: "https://guardapp-ac65a.firebaseio.com",
+    storageBucket: "guardapp-ac65a.appspot.com",
+    messagingSenderId: "299985780377"
+  };
 
+  firebase.initializeApp(config);
+  var db = firebase.database();
+  var rooms = db.ref('sensor/');
+  previous = 0;
+
+  rooms.on('value', function(snapshot) {
+    data = snapshot.val();
+    data1 = snapshot.val();
+    name = Object.keys(data)[0];
+
+    {% for key, value in rooms.items %}
+        if( name == '{{key}}' ) {
+            data = Object.values(data)[0];
+            if (typeof previous.COSensor !== 'undefined'){
+
+                for (sensor_name in data) {
+                    val1 = Object.values(previous[sensor_name])[0];
+                    val2 = Object.values(data[sensor_name])[0];
+                    if ( val1 < val2) {
+                        console.log('Danger in' , sensor_name);
+                        changed_sensor = sensor_name;
+                        $("#danger_title").text("Danger in " + name);
+                        $('#danger_sensor').text("Sensor name: " + changed_sensor);
+                        $('#danger_previous').text("Previous value: " + val1);
+                        $('#danger_current').text("Current value: " + val2);
+                        $('#alert_modal').modal('show');
+                        }
+                    }
+
+             }
+             previous = data;
+        }
+    {% endfor %}
+
+
+     });
+
+
+</script>
 </body>
