@@ -7,9 +7,15 @@ from django.views.decorators.csrf import csrf_exempt
 from firebase_admin import credentials, auth
 from rest_framework.decorators import api_view
 
+from pyfcm import FCMNotification
 from backend.models import Rasps
+from backend.models import FCMTokens
 
 initialized = False
+
+#kurwa siedzialem nad tym 2h a okazalo sie ze jest blad w fcmnotification  i to nie jest api_key tylko SERVER_KEY !!! JPRDL
+push_service = FCMNotification(api_key="AAAARdiLvpk:APA91bGYmQFiCd-ltjrgp-IVbG30kYH0z7i9hShZsA-ZkwwoRS7RgjOgNRD0G6rVyioq6m_0KBg9FSWCNjLdqG8D2DGiMNjkJkJRaTmhwJc_OPS1frV1p-XauTea7fx49N7fdscYPIGD")
+
 
 def initialize_firebase_admin_sdk():
     cred = credentials.Certificate("serviceAccountKey.json")
@@ -47,8 +53,10 @@ def change_device_ownership(owner, serial_nr):
     rasp = Rasps.objects.get(serial=serial_nr)
     rasp.owner = owner
     rasp.save()
-
-    print("Updated object: {0}".format(rasp))
+    device = Rasps.objects.get(serial=serial_nr)
+    device.owner = owner
+    device.save()
+    print("Updated object: {0}".format(device))
     return
 
 
@@ -124,7 +132,6 @@ def assign_device_to_owner(request):
         return HttpResponse(info, content_type="application/json")       
         #return render(request, 'rasp_edit.html', context)
 
-
 # PATH: /backend/v1/notification
 @api_view(['POST'])
 @csrf_exempt
@@ -133,15 +140,59 @@ def notification(request):
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-        print(body)
+        info = ""
+        serial = ""
+        sensorTypes = []
         for item in body:
-            sensorType = item['sensorType']
-            value = item['value']
-            serial = item['serial']
-            print(serial) 
-            print(sensorType)
+            sensorType = item["sensorType"]
+            value = item["value"]
+            serial = item["serial"]
+            sensorTypes.append(sensorType)
+
+        ids = []
+        messageBody = ""
+        messageTitle = ""
+
+        rasp = Rasps.objects.filter(serial=serial)[0]
+        for sensorType in sensorTypes:
+            if(sensorType=="COSensor"):
+                info += "High Value of CO\n"
+            if(sensorType=="LPGSensor"):
+                info += "High Value of LPG\n"
+            if(sensorType=="FlameSensor"):
+                info += "Fire detected!\n"
+            if(sensorType=="TempSensor"):
+                info += "High Value of Temp"
+
+        messageBody = "Alert from %s" % (rasp.name)
+        messageTitle = info
+        for fcm in FCMTokens.objects.filter(email=rasp.owner):
+            ids.append(fcm.fcmToken)
+        
+   
+        result = push_service.notify_multiple_devices(registration_ids=ids, message_title=messageTitle, message_body=messageBody)
+        info = [{'info': 'success'}]
+        json_data = json.dumps(info)
+        json_data = str(json_data)
+        return HttpResponse(json_data, content_type="application/json")
+
+# PATH: /backend/v1/fcmTokenUpdate
+@api_view(['POST'])
+@csrf_exempt
+def fcmTokenUpdate(request):
+    print("tokenUpdate")
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        email = body['email']
+        token = body['fcmToken']
+        deviceId = body['deviceId']
+
+        obj, created = FCMTokens.objects.update_or_create(deviceId=deviceId, defaults={'email': email, 'fcmToken': token})
 
         info = [{'info': 'success'}]
         json_data = json.dumps(info)
         json_data = str(json_data)
         return HttpResponse(json_data, content_type="application/json")
+
+
