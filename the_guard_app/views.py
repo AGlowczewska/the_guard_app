@@ -26,6 +26,8 @@ def index(request):
         return render(request, 'registration/login.html', context)
 
 
+
+
 def stream_handler(message):
     # print('event:' + message["event"])  # put
     # print('path: ' + message["path"])  # /-K7yGTTEp7O549EzTYtI

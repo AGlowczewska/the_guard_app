@@ -43,23 +43,5 @@
 
 
 </script>
-<script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
-<script>
-  var config = {
-    apiKey: "AIzaSyCHL_Er9JtpQbadJtoaZbvYusIY-tBRVC0",
-    authDomain: "guardapp-ac65a.firebaseapp.com",
-    databaseURL: "https://guardapp-ac65a.firebaseio.com",
-    storageBucket: "guardapp-ac65a.appspot.com",
-    messagingSenderId: "299985780377"
-  };
-  firebase.initializeApp(config);
-  var db = firebase.database();
-  var rooms = db.ref('sensors/');
-  rooms.on('value', function(snapshot) {
-    console.log(snapshot.val());
-     });
-
-
-</script>
 
 {% endblock content %}
