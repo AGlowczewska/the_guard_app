@@ -36,7 +36,7 @@
 <div class="row" id="main_row">
     <div class='camera col-md-3'>
         {% for key, value in rooms.items %}
-        <div class="btn btn-default col-md-10 offset-md-1 my_btn">
+        <div class="btn btn-default col-md-10 offset-md-1 my_btn" id="{{key}}">
             <div class="row parent">
                 <a href="/rasp/{{key}}/"> <span class="link_button"> </span></a>
                 <div class="col-md-4"><img class="btn_camera_logo" src="{% static 'pics/camera.png' %}"/></div>

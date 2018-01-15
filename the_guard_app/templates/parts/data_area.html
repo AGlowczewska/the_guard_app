@@ -8,11 +8,14 @@
 
 <div class="row centered">
     {% for key, value in rooms.items %}
-    {% if key == name %}
+    {% if key == serial %}
     <div class="sensor_list">
         {% for sensor, value2 in value.items %}
         <div class="row">
+
+            {% if sensor != 'name' %}
             <p class="col-md-2 offset-md-3"><b>{{sensor}}</b> </p> <p class="col-md-1"> {{ value2.value}}</p>
+            {% endif %}
             {% if sensor == 'COSensor' %}
              <div class="progress col-md-3 my_progress_bar">
                  <div class="progress-bar" id="CO_bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%">
@@ -54,9 +57,11 @@
         else
             myVideo.pause();
     }
+</script>
 
+<script>
 
-
+select_button("{{serial}}");
 </script>
 
 {% endblock content %}

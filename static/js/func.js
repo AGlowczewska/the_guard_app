@@ -55,3 +55,7 @@ function listen_to_changes(){
     }
     });
 } ;
+
+function select_button(key){
+    $('#'+ key).addClass('active');
+};

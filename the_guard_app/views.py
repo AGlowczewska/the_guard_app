@@ -33,7 +33,6 @@ def rasp_view(request, rasp_serial):
     return render(request, 'parts/data_area.html', context)
 
 
-@login_required
 def index(request):
     context = {}
     if request.user.is_authenticated():
