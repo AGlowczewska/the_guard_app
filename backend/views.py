@@ -88,7 +88,7 @@ def register_rasp(request):
     return render(request, 'rasp_edit.html', context)
 
 
-# PATH: /backend/v1/devices
+# PATH: /backend/v1/devices/get
 @api_view(['POST'])
 @csrf_exempt
 def get_devices_for_owner(request):
@@ -195,4 +195,19 @@ def fcmTokenUpdate(request):
         json_data = str(json_data)
         return HttpResponse(json_data, content_type="application/json")
 
+# PATH: /backend/v1/devices/changeRaspName
+@api_view(['POST'])
+@csrf_exempt
+def changeRaspName(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        serial = body['serial']
+        name = body['name']
+        authorize_request(body['token'])
+        obj, created = Rasps.objects.update_or_create(serial=serial, defaults={'name': name})
 
+        info = [{'info': 'success'}]
+        json_data = json.dumps(info)
+        json_data = str(json_data)
+        return HttpResponse(json_data, content_type="application/json")
