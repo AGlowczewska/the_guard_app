@@ -10,6 +10,7 @@ from rest_framework.decorators import api_view
 from pyfcm import FCMNotification
 from backend.models import Rasps
 from backend.models import FCMTokens
+from backend.models import Notification
 
 initialized = False
 
@@ -158,6 +159,8 @@ def notification(request):
                 info += "Fire detected!\n"
             if(sensorType=="TempSensor"):
                 info += "High Value of Temp"
+            notification = Notification(notificationType = sensorType, message = info, rasp = rasp)
+            notification.save()
 
         messageBody = "Alert from %s" % (rasp.name)
         messageTitle = info
@@ -219,6 +222,23 @@ def changeIsArmed(request):
         authorize_request(body['token'])
         obj, created = Rasps.objects.update_or_create(serial=serial, defaults={'isArmed': armed})
 
+        info = [{'info': 'success'}]
+        json_data = json.dumps(info)
+        json_data = str(json_data)
+        return HttpResponse(json_data, content_type="application/json")
+
+# PATH: /backend/v1/devices/getNotifications
+@api_view(['POST'])
+@csrf_exempt
+def getNotifications(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        serial = body['serial']
+        authorize_request(body['token'])
+        notifications = Notification.objects.filter(rasp__serial=serial)
+        print(notifications)
+        
         info = [{'info': 'success'}]
         json_data = json.dumps(info)
         json_data = str(json_data)
