@@ -36,8 +36,10 @@ def authorize_request(token):
 
 
 def add_device_to_database(serial, owner, name):
-    camera = Rasps(serial=serial, owner=owner, name=name)
-    camera.save()
+    device, created = Rasps.objects.get_or_create(serial=serial, defaults={'owner': owner, 'name' : name})
+    
+    #camera = Rasps(serial=serial, owner=owner, name=name)
+    #camera.save()
     print("Added Camera to DB: serial: {} owner: {} name: {}".format(serial, owner, name))
     return
 
@@ -49,10 +51,6 @@ def filter_devices(owner):
 
 
 def change_device_ownership(owner, serial_nr):
-    print("Getting rasps")
-    rasp = Rasps.objects.get(serial=serial_nr)
-    rasp.owner = owner
-    rasp.save()
     device = Rasps.objects.get(serial=serial_nr)
     device.owner = owner
     device.save()
@@ -79,13 +77,13 @@ def register_rasp(request):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         serial = body['serial']
-
+        owner = body['owner']
         authorize_request(body['token'])
-
-        add_device_to_database(serial, "", "Camera")
-        context = {'msg': 'Successfully added to the database'}
-        return render(request, 'rasp_edit.html', context)
-    return render(request, 'rasp_edit.html', context)
+        device, created = Rasps.objects.get_or_create(serial=serial, defaults={'owner': owner, 'name' : 'Guard', 'isArmed' : True})
+        if created:
+            return HttpResponse(content_type = "application/json",status_code = 200)
+    else:
+        return HttpResponse(content_type = "application/json",status_code = 400)
 
 
 # PATH: /backend/v1/devices/get
@@ -109,6 +107,8 @@ def get_devices_for_owner(request):
         json_data = json.dumps(device_list)
         json_data = str(json_data)
         return HttpResponse(json_data, content_type="application/json")
+    else:
+        return HttpResponse(content_type = "application/json",status_code = 400)
 
 
 # PATH: /backend/v1/devices/assign
@@ -125,12 +125,7 @@ def assign_device_to_owner(request):
         owner = body['owner']
         authorize_request(body['token'])
         change_device_ownership(owner, serial)
-        context = {'msg': 'Ownership successfully changed'}
-        info = {'info': 'success'}
-        #json_data = json.dumps(info)
-        #json_data = str(json_data)
         return HttpResponse(info, content_type="application/json")       
-        #return render(request, 'rasp_edit.html', context)
 
 # PATH: /backend/v1/notification
 @api_view(['POST'])
@@ -206,6 +201,23 @@ def changeRaspName(request):
         name = body['name']
         authorize_request(body['token'])
         obj, created = Rasps.objects.update_or_create(serial=serial, defaults={'name': name})
+
+        info = [{'info': 'success'}]
+        json_data = json.dumps(info)
+        json_data = str(json_data)
+        return HttpResponse(json_data, content_type="application/json")
+
+# PATH: /backend/v1/devices/changeIsArmed
+@api_view(['POST'])
+@csrf_exempt
+def changeIsArmed(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        serial = body['serial']
+        armed = body['armed']
+        authorize_request(body['token'])
+        obj, created = Rasps.objects.update_or_create(serial=serial, defaults={'isArmed': armed})
 
         info = [{'info': 'success'}]
         json_data = json.dumps(info)
