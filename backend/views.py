@@ -237,9 +237,13 @@ def getNotifications(request):
         serial = body['serial']
         authorize_request(body['token'])
         notifications = Notification.objects.filter(rasp__serial=serial)
-        print(notifications)
         
-        info = [{'info': 'success'}]
-        json_data = json.dumps(info)
+        notification_list = []
+        for notification in notifications:
+            notif = {'type': notification.notificationType, 'date': str(notification.date), 'message': notification.message}
+            notification_list.append(notif)
+
+        json_data = json.dumps(notification_list)
         json_data = str(json_data)
+        
         return HttpResponse(json_data, content_type="application/json")
