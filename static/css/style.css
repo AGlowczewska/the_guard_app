@@ -111,3 +111,15 @@ a:hover{
     padding: 0px;
     margin-left: 15px;
 }
+
+.sensor_val {
+    display:none;
+}
+
+#FlameSensorVal, #TempVal {
+    text-align: center;
+}
+
+.progress {
+border: 2px solid rgba(23, 15, 15, 1); border-radius: 25px;
+}

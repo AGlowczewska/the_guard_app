@@ -14,20 +14,20 @@
         <div class="row">
 
             {% if sensor != 'name' %}
-            <p class="col-md-2 offset-md-3"><b>{{sensor}}</b> </p> <p class="col-md-1"> {{ value2.value}}</p>
+            <p class="col-md-2 offset-md-3"><b>{{sensor}}</b> </p> <p class="sensor_val" id="{{sensor}}"> {{ value2.value}}</p>
             {% endif %}
             {% if sensor == 'COSensor' %}
-             <div class="progress col-md-3 my_progress_bar">
-                 <div class="progress-bar" id="CO_bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%">
-                        70%
-                 </div>
+             <div class="progress col-md-4 my_progress_bar">
+                 <div class="progress-bar" id="CO_bar" role="progressbar" style="width:0%"></div>
             </div>
             {% elif sensor == 'LPGSensor' %}
-            <div class="progress col-md-3 my_progress_bar">
-                 <div class="progress-bar" id="LPG_bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%">
-                        70%
-                 </div>
+            <div class="progress col-md-4 my_progress_bar">
+                 <div class="progress-bar" id="LPG_bar" style="width:0%"></div>
             </div>
+            {% elif sensor == 'FlameSensor' %}
+                 <p class='col-md-4' id="FlameSensorVal">{{ value2.value}}</p>
+            {% elif sensor == 'TempSensor' %}
+                 <p class='col-md-4' id="TempVal">{{ value2.value}}</p>
             {% endif %}
         </div>
         {% endfor %}
@@ -62,6 +62,7 @@
 <script>
 
 select_button("{{serial}}");
+listen_to_rasp("{{serial}}");
 </script>
 
 {% endblock content %}
