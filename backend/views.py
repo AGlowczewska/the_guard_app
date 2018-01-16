@@ -79,7 +79,7 @@ def register_rasp(request):
         serial = body['serial']
         owner = body['owner']
         authorize_request(body['token'])
-        device, created = Rasps.objects.get_or_create(serial=serial, defaults={'owner': owner, 'name' : 'Guard'})
+        device, created = Rasps.objects.get_or_create(serial=serial, defaults={'owner': owner, 'name' : 'Guard', 'isArmed' : True})
         if created:
             return HttpResponse(content_type = "application/json",status_code = 200)
     else:
