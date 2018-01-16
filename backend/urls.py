@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^v1/notification', views.notification),
     url(r'^v1/fcmTokenUpdate', views.fcmTokenUpdate),
     url(r'^v1/devices/changeRaspName', views.changeRaspName),
+    url(r'^v1/devices/changeIsArmed', views.changeIsArmed),
 ]

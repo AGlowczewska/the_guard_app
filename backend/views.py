@@ -206,3 +206,20 @@ def changeRaspName(request):
         json_data = json.dumps(info)
         json_data = str(json_data)
         return HttpResponse(json_data, content_type="application/json")
+
+# PATH: /backend/v1/devices/changeIsArmed
+@api_view(['POST'])
+@csrf_exempt
+def changeIsArmed(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        serial = body['serial']
+        armed = body['armed']
+        authorize_request(body['token'])
+        obj, created = Rasps.objects.update_or_create(serial=serial, defaults={'isArmed': armed})
+
+        info = [{'info': 'success'}]
+        json_data = json.dumps(info)
+        json_data = str(json_data)
+        return HttpResponse(json_data, content_type="application/json")
