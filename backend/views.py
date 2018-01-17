@@ -128,6 +128,29 @@ def assign_device_to_owner(request):
         change_device_ownership(owner, serial)
         return HttpResponse(info, content_type="application/json")       
 
+
+# PATH: /backend/v1/PIRnotification
+@api_view(['POST'])
+@csrf_exempt
+def notificationPIR(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    serial = body['serial']
+    message = body['message']
+    rasp = Rasps.objects.filter(serial=serial)[0]
+    notification = Notification(notificationType = 'PIRSensor', message = message, rasp = rasp)
+    notification.save()
+    ids = []
+    messageBody = "Alert from %s" % (rasp.name)
+    messageTitle = message
+    for fcm in FCMTokens.objects.filter(email=rasp.owner):
+        ids.append(fcm.fcmToken)
+    result = push_service.notify_multiple_devices(registration_ids=ids, message_title=messageTitle, message_body=messageBody)
+    info = [{'info': 'success'}]
+    json_data = json.dumps(info)
+    json_data = str(json_data)
+    return HttpResponse(json_data, content_type="application/json")
+
 # PATH: /backend/v1/notification
 @api_view(['POST'])
 @csrf_exempt
@@ -240,7 +263,7 @@ def getNotifications(request):
         
         notification_list = []
         for notification in notifications:
-            notif = {'type': notification.notificationType, 'date': str(notification.date), 'message': notification.message}
+            notif = {'serial': notification.rasp.serial, 'type': notification.notificationType, 'date': str(notification.date), 'message': notification.message}
             notification_list.append(notif)
 
         json_data = json.dumps(notification_list)
