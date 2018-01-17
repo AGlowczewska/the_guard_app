@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^v1/devices/changeRaspName', views.changeRaspName),
     url(r'^v1/devices/changeIsArmed', views.changeIsArmed),
     url(r'^v1/devices/notifications', views.getNotifications),
+    url(r'^v1/PIRnotification', views.notificationPIR),
 ]
