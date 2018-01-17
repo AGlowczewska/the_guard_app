@@ -4,6 +4,16 @@
 
 <h1>{{name}} </h1>
 <h3>{{serial}}</h3>
+{% if isArmed == True %}
+<div>
+<a role='button' class="btn btn-sm my_btn arm_btn" href="/change_armed_status/{{serial}}/"> This raspberry is armed. Click to disarm it.</a>
+</div>
+{% else %}
+<div>
+    <a role='button' class="btn btn-sm my_btn arm_btn" href="/change_armed_status/{{serial}}/"> This raspberry is disarmed. Click to arm it. </a>
+</div>
+
+{% endif %}
 <video id="video" onclick="playPause()"></video>
 
 <div class="row centered">
@@ -13,7 +23,7 @@
         {% for sensor, value2 in value.items %}
         <div class="row">
 
-            {% if sensor != 'name' %}
+            {% if sensor != 'name' and sensor != 'isArmed' %}
             <p class="col-md-2 offset-md-3"><b>{{sensor}}</b> </p> <p class="sensor_val" id="{{sensor}}"> {{ value2.value}}</p>
             {% endif %}
             {% if sensor == 'COSensor' %}

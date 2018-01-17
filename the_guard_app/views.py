@@ -5,6 +5,20 @@ from backend.models import Rasps
 from django.db import IntegrityError
 
 
+@login_required
+def change_armed_status(request, rasp_serial):
+    rasp = Rasps.objects.filter(serial=rasp_serial)[0]
+    is_armed = rasp.isArmed
+    rasp.isArmed = not is_armed
+    rasp.save()
+    rooms = user_rasps(request.user.username)
+    is_armed = rooms[rasp_serial]['isArmed']
+    del rooms[rasp_serial]['isArmed']
+    context = {'rooms': rooms, 'name': rooms[rasp_serial]['name'], 'serial': rasp_serial,
+               'isArmed': is_armed}
+    return render(request, 'parts/data_area.html', context)
+
+
 def user_rasps(username):
     firebase_result = db.child("sensor").get().val()
     my_rasps = Rasps.objects.filter(owner=username)
@@ -12,15 +26,18 @@ def user_rasps(username):
     for firebase_rasp in firebase_result:
         to_delete = True
         name = ''
+        is_armed = True
         for django_rasp in my_rasps:
             if django_rasp.serial == firebase_rasp:
                 to_delete = False
                 name = django_rasp.name
+                is_armed = django_rasp.isArmed
         if to_delete:
             del(firebase_result[firebase_rasp])
             print('Not in result - deleted: ', firebase_rasp)
         else:
             firebase_result[firebase_rasp]['name'] = name
+            firebase_result[firebase_rasp]['isArmed'] = is_armed
 
     return firebase_result
 
@@ -28,8 +45,10 @@ def user_rasps(username):
 @login_required
 def rasp_view(request, rasp_serial):
     rooms = user_rasps(request.user.username)
-
-    context = {'rooms': rooms, 'name': rooms[rasp_serial]['name'], 'serial': rasp_serial}
+    is_armed = rooms[rasp_serial]['isArmed']
+    # del rooms[rasp_serial]['isArmed']
+    context = {'rooms': rooms, 'name': rooms[rasp_serial]['name'], 'serial': rasp_serial,
+               'isArmed': is_armed}
     return render(request, 'parts/data_area.html', context)
 
 
