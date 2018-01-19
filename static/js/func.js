@@ -119,8 +119,6 @@ if (!firebase.apps.length) {
                             }
 
                      }
-
-
                     }
                 }
                  previous = data;
