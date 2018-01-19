@@ -123,3 +123,7 @@ a:hover{
 .progress {
 border: 2px solid rgba(23, 15, 15, 1); border-radius: 25px;
 }
+
+.arm_btn{
+    display: block;
+}

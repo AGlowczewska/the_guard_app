@@ -60,7 +60,14 @@
 
     </div>
     <div class='camera col-md-8 centered'>
-
+        {% if msg %}<div class="row">
+            <div class="col-md-4 offset-md-4 col-sm-10 offset-sm-1">
+                <div class="alert my_alert">
+                    <p>{{ msg }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     {% block content %}
     {% endblock content %}
 

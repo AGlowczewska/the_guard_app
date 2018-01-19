@@ -6,6 +6,28 @@ from django.db import IntegrityError
 
 
 @login_required
+def rename(request, rasp_serial):
+    rooms = user_rasps(request.user.username)
+    context = {'rooms': rooms, 'serial': rasp_serial}
+
+    if request.method == 'POST':
+        name = request.POST['name']
+        my_rasp = Rasps.objects.filter(serial=rasp_serial)[0]
+        my_rasp.name = name
+        try:
+            my_rasp.save()
+            rooms = user_rasps(request.user.username)
+            context = {'rooms': rooms, 'serial': rasp_serial, 'msg': 'Successfully updated to db'}
+        except IntegrityError as err:
+            context['msg'] = 'ERROR: Integrity error!'
+        except Exception as err:
+            context['msg'] = err
+        return render(request, 'index.html', context)
+
+    return render(request, 'parts/rename.html', context)
+
+
+@login_required
 def change_armed_status(request, rasp_serial):
     rasp = Rasps.objects.filter(serial=rasp_serial)[0]
     is_armed = rasp.isArmed

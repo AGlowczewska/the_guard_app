@@ -22,7 +22,6 @@ function listen_to_rasp(key){
 
   rooms.on('value', function(snapshot) {
     data = snapshot.val();
-    // names = Object.keys(data);
     sensors = document.getElementsByClassName("sensor_val");
 
     for(var i =0; i < sensors.length; i ++){
@@ -51,7 +50,7 @@ function listen_to_rasp(key){
             else $('#FlameSensorVal').text('High Value!');
         }
         if (sensors[i].id == 'TempSensor'){
-            console.log(val1 + 'test');
+            // console.log(val1 + 'test');
             $('#TempVal').text(val1);
         }
         }
@@ -61,7 +60,7 @@ function listen_to_rasp(key){
 
 
 function listen_to_changes(){
-
+if (!firebase.apps.length) {
 /******* FIREBASE INITIALIZATION ****************/
   var config = {
         apiKey: "AIzaSyCHL_Er9JtpQbadJtoaZbvYusIY-tBRVC0",
@@ -72,6 +71,7 @@ function listen_to_changes(){
       };
 
   firebase.initializeApp(config);
+  }
   var db = firebase.database();
   var rooms = db.ref('sensor/');
   /***********************************************/
@@ -81,37 +81,55 @@ function listen_to_changes(){
   rooms.on('value', function(snapshot) {
     data = snapshot.val();
     name = Object.keys(data)[0];
+    names = Object.keys(data);
 
-   var rasps = document.getElementsByClassName("keys"); //rasps_names
-    // for (var i=0; i < rasps.length; i++) console.log(rasps[i].innerHTML);
+    /*for (var j = 0; j < names.length; j++) {
+        console.log(names[j]);
+        }*/
+
+   rasps = document.getElementsByClassName("keys"); //rasps_names
+   for (var i=0; i < rasps.length; i++) console.log(rasps[i].id);
 
     for (var i=0; i < rasps.length; i++) {
-        if (name == rasps[i].innerHTML) {
-            data = Object.values(data)[0];
-            if (typeof previous.COSensor !== 'undefined'){
+        for (var j = 0; j < names.length; j++) {
+            if (names[j] === rasps[i].id) {
+                for (var k=0; k<rasps[i].classList.length; k++){
+                data = snapshot.val();
+                    if (rasps[i].classList[k] == 'False'){
+                        console.log('hej');
+                    } else {
+                    data = Object.values(data)[j];
+                    console.log('data test: ', data);
+                    if (typeof previous.COSensor !== 'undefined'){
 
-                for (sensor_name in data) {
-                    val1 = Object.values(previous[sensor_name])[0];
-                    val2 = Object.values(data[sensor_name])[0];
-                    if ( val1 < val2) {
-                        console.log('Danger in' , sensor_name);
-                        changed_sensor = sensor_name;
-                        $("#danger_title").text("Danger in " + name);
-                        $('#danger_sensor').text("Sensor name: " + changed_sensor);
-                        $('#danger_previous').text("Previous value: " + val1);
-                        $('#danger_current').text("Current value: " + val2);
-                        $('#modal_button').attr("href", "/rasp/"+name+"/")
-                        $('#alert_modal').modal('show');
-                        }
+                        for (sensor_name in data) {
+                            val1 = Object.values(previous[sensor_name])[0];
+                            val2 = Object.values(data[sensor_name])[0];
+                            console.log('val1 ', val1, 'val2 ', val2);
+                            if ( val1 < val2) {
+                                console.log('Danger in' , sensor_name);
+                                changed_sensor = sensor_name;
+                                $("#danger_title").text("Danger in " + name);
+                                $('#danger_sensor').text("Sensor name: " + changed_sensor);
+                                $('#danger_previous').text("Previous value: " + val1);
+                                $('#danger_current').text("Current value: " + val2);
+                                $('#modal_button').attr("href", "/rasp/"+name+"/")
+                                $('#alert_modal').modal('show');
+                                }
+                            }
+
+                     }
+
+
                     }
-
-             }
-             previous = data;
+                }
+                 previous = data;
+            }
         }
     }
     });
 } ;
 
 function select_button(key){
-    $('#'+ key).addClass('active');
+    $('#'+ key).parent().parent().parent().addClass('active');
 };

@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<h1>Rename Guard</h1>
+<h2>{{serial}}</h2>
+
+    <form class="form-horizontal" action="/rename/{{serial}}/" method="post">
+        {% csrf_token %}
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}"/>
+        {% endif %}
+
+        {% if msg %}<div class="row">
+            <div class="col-md-4 offset-md-4 col-sm-10 offset-sm-1">
+                <div class="alert my_alert">
+                    <p>{{ msg }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <br>
+        <div class="row">
+            <div class="col-md-2 offset-md-5 col-sm-10 offset-sm-1">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="New name">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2 offset-md-5 col-sm-10 offset-sm-1">
+                <button type="submit" class="btn btn-block btn-warning btn-lg my_btn ">Rename</button>
+            </div>
+        </div>
+    </form>
+
+
+{% endblock content %}
