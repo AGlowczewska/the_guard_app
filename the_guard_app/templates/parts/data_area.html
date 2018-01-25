@@ -2,22 +2,52 @@
 
 {% block content %}
 
-<h1>{{name}}</h1>
+<h1>{{name}} </h1><a href="/rename/{{serial}}/"> Click to rename </a>
+<h3>{{serial}}</h3>
+{% if isArmed == True %}
+<div>
+<a role='button' class="btn btn-sm my_btn arm_btn" href="/change_armed_status/{{serial}}/"> This raspberry is armed. Click to disarm it.</a>
+</div>
+{% else %}
+<div>
+    <a role='button' class="btn btn-sm my_btn arm_btn" href="/change_armed_status/{{serial}}/"> This raspberry is disarmed. Click to arm it. </a>
+</div>
 
+{% endif %}
 <video id="video" onclick="playPause()"></video>
 
 <div class="row centered">
     {% for key, value in rooms.items %}
-    {% if key == name %}
-    <ul class="sensor_list">
+    {% if key == serial %}
+    <div class="sensor_list">
         {% for sensor, value2 in value.items %}
-        <li>{{sensor}} : {{ value2.value}}</li>
+        <div class="row">
+
+            {% if sensor != 'name' and sensor != 'isArmed' %}
+            <p class="col-md-2 offset-md-3"><b>{{sensor}}</b> </p> <p class="sensor_val" id="{{sensor}}"> {{ value2.value}}</p>
+            {% endif %}
+            {% if sensor == 'COSensor' %}
+             <div class="progress col-md-4 my_progress_bar">
+                 <div class="progress-bar" id="CO_bar" role="progressbar" style="width:0%"></div>
+            </div>
+            {% elif sensor == 'LPGSensor' %}
+            <div class="progress col-md-4 my_progress_bar">
+                 <div class="progress-bar" id="LPG_bar" style="width:0%"></div>
+            </div>
+            {% elif sensor == 'FlameSensor' %}
+                 <p class='col-md-4' id="FlameSensorVal">{{ value2.value}}</p>
+            {% elif sensor == 'TempSensor' %}
+                 <p class='col-md-4' id="TempVal">{{ value2.value}}</p>
+            {% endif %}
+        </div>
         {% endfor %}
-    </ul>
+    </div>
     {% endif %}
     {% endfor %}
 </div>
-
+<div>
+    <a role='button' class="btn btn-sm my_btn arm_btn" href="/notifications/{{serial}}/"> Check notifications from this device </a>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -39,9 +69,12 @@
         else
             myVideo.pause();
     }
+</script>
 
+<script>
 
-
+select_button("{{serial}}");
+listen_to_rasp("{{serial}}");
 </script>
 
 {% endblock content %}

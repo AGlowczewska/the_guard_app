@@ -72,6 +72,8 @@ a:hover{
 .sensor_list {
     margin: auto;
     padding: 10px;
+    width: 100%;
+    text-align: left;
 }
 
 #main_row {
@@ -103,4 +105,25 @@ a:hover{
 
 #danger_content {
     border: 3px solid black;
+}
+
+.my_progress_bar{
+    padding: 0px;
+    margin-left: 15px;
+}
+
+.sensor_val {
+    display:none;
+}
+
+#FlameSensorVal, #TempVal {
+    text-align: center;
+}
+
+.progress {
+border: 2px solid rgba(23, 15, 15, 1); border-radius: 25px;
+}
+
+.arm_btn{
+    display: block;
 }
