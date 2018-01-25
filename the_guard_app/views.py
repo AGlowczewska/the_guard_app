@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from the_guard.pyrebase_settings import db
-from backend.models import Rasps
+from backend.models import *
 from django.db import IntegrityError
 
 
@@ -43,26 +43,23 @@ def change_armed_status(request, rasp_serial):
 
 def user_rasps(username):
     firebase_result = db.child("sensor").get().val()
-    my_rasps = Rasps.objects.filter(owner=username)
+    my_rasps = Rasps.objects.filter(owner=username).values()
     result = firebase_result
     for firebase_rasp in firebase_result:
         to_delete = True
         name = ''
         is_armed = True
         for django_rasp in my_rasps:
-            if django_rasp.serial == firebase_rasp:
+            if django_rasp['serial'] == firebase_rasp:
                 to_delete = False
-                name = django_rasp.name
-                is_armed = django_rasp.isArmed
+                name = django_rasp['name']
+                is_armed = django_rasp['isArmed']
         if to_delete:
             del(result[firebase_rasp])
             print('Not in result - deleted: ', firebase_rasp)
         else:
-            result[django_rasp.serial] = firebase_result[django_rasp.serial]
-            result[django_rasp.serial]['name'] = name
-            result[django_rasp.serial]['isArmed'] = is_armed
-            #firebase_result[firebase_rasp]['name'] = name
-            #firebase_result[firebase_rasp]['isArmed'] = is_armed
+            result[firebase_rasp]['name'] = name
+            result[firebase_rasp]['isArmed'] = is_armed
 
     return result
 
@@ -75,6 +72,14 @@ def rasp_view(request, rasp_serial):
     context = {'rooms': rooms, 'name': rooms[rasp_serial]['name'], 'serial': rasp_serial,
                'isArmed': is_armed}
     return render(request, 'parts/data_area.html', context)
+
+
+@login_required
+def notifications(request, rasp_serial):
+    rasp_notifications = Notification.objects.filter(rasp__serial=rasp_serial).values()
+    rooms = user_rasps(request.user.username)
+    context = {'rooms': rooms, 'notifications': rasp_notifications}
+    return render(request, 'parts/rasp_notifications.html', context)
 
 
 def index(request):
