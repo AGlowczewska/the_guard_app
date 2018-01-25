@@ -6,7 +6,6 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from firebase_admin import credentials, auth
 from rest_framework.decorators import api_view
-
 from pyfcm import FCMNotification
 from backend.models import Rasps
 from backend.models import FCMTokens
@@ -15,7 +14,7 @@ from backend.models import Notification
 import numpy as np
 import cv2
 import time
-import threading as thread
+import subprocess
 
 initialized = False
 
@@ -64,25 +63,12 @@ def change_device_ownership(owner, serial_nr):
     print("Updated object: {0}".format(device))
     return
 
-def record_video(stream, timestamp, time):
-    cap = cv2.VideoCapture("http://localhost/hls/%s.m3u8" % stream)
-    record = cv2.VideoWriter("recordings/record_%s.avi" % timestamp, cv2.VideoWriter_fourcc('M','J','P','G'), 30, (1280,720))
-    fps = 30
-    i = 0
-    while cap.isOpened() and i < time*fps:
-        isAvail, frame = cap.read()
-        if isAvail:
-            record.write(frame)
-            sleep.sleep(1/fps)
-    cap.release()
-    record.release()
-
 
 # PATH: /backend/v1/camera_address/
-@api_view(['POST'])
+@api_view(['GET'])
 @csrf_exempt
 def get_test_address(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = {"id": "http://52.236.165.15:80/hls/test.m3u8"}
         dump = json.dumps(data)
         return HttpResponse(dump, content_type="application/json")
@@ -102,8 +88,8 @@ def register_rasp(request):
         device, created = Rasps.objects.get_or_create(serial=serial, defaults={'owner': owner, 'name' : 'Guard', 'isArmed' : True})
         if created:
             return HttpResponse(content_type = "application/json",status_code = 200)
-    else:
-        return HttpResponse(content_type = "application/json",status_code = 400)
+    
+    return HttpResponse(content_type = "application/json",status_code = 400)
 
 
 # PATH: /backend/v1/devices/get
@@ -156,38 +142,48 @@ def notificationPIR(request):
     body = json.loads(body_unicode)
     serial = body['serial']
     message = body['message']
-    
+    detectedPersons = 0
     # 1. get frame from stream connected with rasp
     cap = cv2.VideoCapture("http://52.236.165.15:80/hls/%s.m3u8" % (serial))
+    ts = str(time.time())
+    dotPosition = ts.find('.')
+    timestamp = ts[:dotPosition]+ts[dotPosition+1:]
     if cap.isOpened():
-        ts = str(time.time())
-        dotPosition = ts.find('.')
+#        ts = str(time.time())
+#        dotPosition = ts.find('.')
+#        timestamp = ts[:dotPosition]+ts[dotPosition+1:]
         isAvail, frame = cap.read()
         if isAvail == True:
             # 2. check for face in the frame
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-            if len(faces) > 0:
+            detectedPersons = len(faces)
+            if detectedPersons > 0:
                 # 3. save it to file
-                cv2.imwrite('images/image%s.jpg' % ts[:dotPosition]+ts[dotPosition+1:],frame)
-                print("Face(s) detected")
+                
+                cv2.imwrite('static/images/image'+timestamp+'.jpg',frame)
+                if detectedPersons == 1:
+                    print("One person detected!")
+                else:
+                    print("{} face(s) detected".format(len(faces)))
+                #w nowym procesie
+                subprocess.call(['python3','backend/record_stream.py',serial,timestamp,'10'])
+                videoUrl =  "https://storage.googleapis.com/guardapp-ac65a.appspot.com/"+serial+"/"+timestamp+".avi"
+                rasp = Rasps.objects.filter(serial=serial)[0]
+                notification = Notification(notificationType = 'PIRSensor', message = message, rasp = rasp, videoURL = videoUrl)
+                notification.save()
+                ids = []
+
+                messageBody = "Alert from %s\n" % (rasp.name)
+                messageBody += str(detectedPersons)+" persons detected"
+                messageTitle = message
+                for fcm in FCMTokens.objects.filter(email=rasp.owner):
+                    ids.append(fcm.fcmToken)
+                result = push_service.notify_multiple_devices(registration_ids=ids, message_title=messageTitle, message_body=messageBody, videoURL = videoUrl)
+
             else:
                 print("Didn't found any face")
-        #in new thread
-        #thread.start_new_thread( record_video, (serial, ts[:dotPosition]+ts[dotPosition+1:], 10, )) 
-    # for recording video:
-    # out = cv2.VideoWriter('test.avi', cv2.VideoWriter_fourcc('M','J','P','G'), 20.0, (1280,720))
-    # control time, fps for counting frames included in file
     
-    rasp = Rasps.objects.filter(serial=serial)[0]
-    notification = Notification(notificationType = 'PIRSensor', message = message, rasp = rasp)
-    notification.save()
-    ids = []
-    messageBody = "Alert from %s" % (rasp.name)
-    messageTitle = message
-    for fcm in FCMTokens.objects.filter(email=rasp.owner):
-        ids.append(fcm.fcmToken)
-    result = push_service.notify_multiple_devices(registration_ids=ids, message_title=messageTitle, message_body=messageBody)
     info = [{'info': 'success'}]
     json_data = json.dumps(info)
     json_data = str(json_data)
@@ -306,7 +302,7 @@ def getNotifications(request):
         
         notification_list = []
         for notification in notifications:
-            notif = {'serial': notification.rasp.serial, 'type': notification.notificationType, 'date': str(notification.date), 'message': notification.message}
+            notif = {'serial': notification.rasp.serial, 'type': notification.notificationType, 'date': str(notification.date), 'message': notification.message, 'videoURL': notification.videoURL}
             notification_list.append(notif)
 
         json_data = json.dumps(notification_list)
