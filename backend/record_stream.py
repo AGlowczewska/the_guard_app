@@ -27,7 +27,7 @@ def recordVideo(stream, timestamp, time):
     print("STREAM: {}\n".format(streamAddress))
     print("FILE: {}\n".format(fileDestination))
     cap = cv2.VideoCapture(streamAddress)
-    size = (int(cap.get(3)),int(cap.get(4)))
+    size = (640, 360)
     record = cv2.VideoWriter(fileDestination, cv2.VideoWriter_fourcc('M','J','P','G'), 30, size)
     fps = 30
     i = 0
@@ -37,7 +37,7 @@ def recordVideo(stream, timestamp, time):
             print("Recording started")
         isAvail, frame = cap.read()
         if isAvail:
-            record.write(frame)
+            record.write(cv2.resize(frame, size)
             sleep(1/fps)
         #print(" {} {} ".format(i, isAvail))
         i+=1
@@ -45,9 +45,9 @@ def recordVideo(stream, timestamp, time):
     cap.release()
     record.release()
     cv2.destroyAllWindows()
-    print("Converting avi to mp4")
+    #print("Converting avi to mp4")
 
-    subprocess.call(['bash','convert_video.sh',timestamp])
+    #subprocess.call(['bash','convert_video.sh',timestamp])
 
     #upload to bucket
     blob = bucket.blob(stream+'/'+timestamp+'.mp4')

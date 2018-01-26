@@ -168,7 +168,7 @@ def notificationPIR(request):
                 else:
                     print("{} face(s) detected".format(len(faces)))
                 #w nowym procesie
-                subprocess.call(['python3','backend/record_stream.py',serial,timestamp,'10'])
+                subprocess.call(['python3','backend/record_stream.py',serial,timestamp,'30'])
                 videoUrl =  "https://storage.googleapis.com/guardapp-ac65a.appspot.com/"+serial+"/"+timestamp+".avi"
                 rasp = Rasps.objects.filter(serial=serial)[0]
                 notification = Notification(notificationType = 'PIRSensor', message = message, rasp = rasp, videoURL = videoUrl)
@@ -180,7 +180,7 @@ def notificationPIR(request):
                 messageTitle = message
                 for fcm in FCMTokens.objects.filter(email=rasp.owner):
                     ids.append(fcm.fcmToken)
-                result = push_service.notify_multiple_devices(registration_ids=ids, message_title=messageTitle, message_body=messageBody, videoURL = videoUrl)
+                result = push_service.notify_multiple_devices(registration_ids=ids, message_title=messageTitle, message_body=messageBody)
 
             else:
                 print("Didn't found any face")
