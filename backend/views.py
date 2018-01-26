@@ -168,7 +168,7 @@ def notificationPIR(request):
                 else:
                     print("{} face(s) detected".format(len(faces)))
                 #w nowym procesie
-                subprocess.call(['python3','backend/record_stream.py',serial,timestamp,'10'])
+                subprocess.call(['python3','backend/record_stream.py',serial,timestamp,'20'])
                 videoUrl =  "https://storage.googleapis.com/guardapp-ac65a.appspot.com/"+serial+"/"+timestamp+".avi"
                 rasp = Rasps.objects.filter(serial=serial)[0]
                 notification = Notification(notificationType = 'PIRSensor', message = message, rasp = rasp, videoURL = videoUrl)
