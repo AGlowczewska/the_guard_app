@@ -2,18 +2,20 @@
 
 {% block content %}
 
-<h1>{{name}} </h1><a href="/rename/{{serial}}/"> Click to rename </a>
-<h3>{{serial}}</h3>
+<div class='row'>
+<h1 class='col-md-10'>{{name}} ({{serial}})</h1>
+<div class='col-md-2'><a role='button' class="btn btn-sm my_btn" id="a_rename" href="/rename/{{serial}}/"> Rename </a></div>
+</div>
+<div class='row'><div class="col-md-6">
 {% if isArmed == True %}
-<div>
 <a role='button' class="btn btn-sm my_btn arm_btn" href="/change_armed_status/{{serial}}/"> This raspberry is armed. Click to disarm it.</a>
-</div>
 {% else %}
-<div>
-    <a role='button' class="btn btn-sm my_btn arm_btn" href="/change_armed_status/{{serial}}/"> This raspberry is disarmed. Click to arm it. </a>
-</div>
-
+<a role='button' class="btn btn-sm my_btn arm_btn" href="/change_armed_status/{{serial}}/"> This raspberry is disarmed. Click to arm it. </a>
 {% endif %}
+</div>
+<div class='col-md-6'>
+    <a role='button' class="btn btn-sm my_btn arm_btn" href="/notifications/{{serial}}/"> Check notifications from this device </a>
+</div></div>
 <video id="video" onclick="playPause()"></video>
 
 <div class="row centered">
@@ -45,9 +47,6 @@
     {% endif %}
     {% endfor %}
 </div>
-<div>
-    <a role='button' class="btn btn-sm my_btn arm_btn" href="/notifications/{{serial}}/"> Check notifications from this device </a>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -55,7 +54,7 @@
       if(Hls.isSupported()) {
         var video = document.getElementById('video');
         var hls = new Hls();
-        hls.loadSource('http://52.236.165.15.:80/hls/test.m3u8');
+        hls.loadSource('http://52.236.165.15.:80/hls/{{serial}}.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED,function() {
           video.play();
