@@ -80,7 +80,6 @@ if (!firebase.apps.length) {
 
   rooms.on('value', function(snapshot) {
     data = snapshot.val();
-    name = Object.keys(data)[0];
     names = Object.keys(data);
 
     /*for (var j = 0; j < names.length; j++) {
@@ -109,7 +108,8 @@ if (!firebase.apps.length) {
                             if ( val1 < val2) {
                                 console.log('Danger in' , sensor_name);
                                 changed_sensor = sensor_name;
-                                $("#danger_title").text("Danger in " + name);
+                                place = document.getElementById(names[j]).innerHTML;
+                                $("#danger_title").text("Danger in " + place);
                                 $('#danger_sensor').text("Sensor name: " + changed_sensor);
                                 $('#danger_previous').text("Previous value: " + val1);
                                 $('#danger_current').text("Current value: " + val2);
