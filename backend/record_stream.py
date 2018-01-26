@@ -37,7 +37,7 @@ def recordVideo(stream, timestamp, time):
             print("Recording started")
         isAvail, frame = cap.read()
         if isAvail:
-            record.write(cv2.resize(frame, size)
+            record.write(cv2.resize(frame, size))
             sleep(1/fps)
         #print(" {} {} ".format(i, isAvail))
         i+=1
