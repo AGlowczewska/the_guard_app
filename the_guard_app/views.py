@@ -44,7 +44,7 @@ def change_armed_status(request, rasp_serial):
 def user_rasps(username):
     firebase_result = db.child("sensor").get().val()
     my_rasps = Rasps.objects.filter(owner=username).values()
-    result = firebase_result
+    result = firebase_result.copy()
     for firebase_rasp in firebase_result:
         to_delete = True
         name = ''
