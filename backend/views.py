@@ -16,7 +16,6 @@ import cv2
 import time
 import subprocess
 
-
 initialized = False
 
 #kurwa siedzialem nad tym 2h a okazalo sie ze jest blad w fcmnotification  i to nie jest api_key tylko SERVER_KEY !!! JPRDL
