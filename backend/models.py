@@ -16,7 +16,7 @@ class FCMTokens(models.Model):
 
 class Notification(models.Model):
     notificationType = models.CharField(max_length=100)
-    date = models.DateField(auto_now_add = True)
+    date = models.DateTimeField(auto_now_add = True)
     message = models.CharField(max_length=250)
     rasp = models.ForeignKey(Rasps, on_delete=models.CASCADE)
     videoURL = models.CharField(max_length=100, default = "")

@@ -18,7 +18,6 @@ import subprocess
 
 initialized = False
 
-#kurwa siedzialem nad tym 2h a okazalo sie ze jest blad w fcmnotification  i to nie jest api_key tylko SERVER_KEY !!! JPRDL
 push_service = FCMNotification(api_key="AAAARdiLvpk:APA91bGYmQFiCd-ltjrgp-IVbG30kYH0z7i9hShZsA-ZkwwoRS7RgjOgNRD0G6rVyioq6m_0KBg9FSWCNjLdqG8D2DGiMNjkJkJRaTmhwJc_OPS1frV1p-XauTea7fx49N7fdscYPIGD")
 
 face_cascade = cv2.CascadeClassifier('/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml')
