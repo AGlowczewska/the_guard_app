@@ -2,17 +2,22 @@
 
 {% block content %}
 <div class="row">
-<p class="col-md-3 offset-md-2"><b>Date</b></p>
+<p class="col-md-3 offset-md-1"><b>Date</b></p>
     <p class="col-md-3"><b>Type of notfication</b></p>
 <p class="col-md-3"><b>Message</b></p>
+<p class="col-md-2"><b> Download</b></p>
     </div>
 <hr style="margin-top:0px;">
 {% for notification in notifications %}
 
 <div class="row">
-<p class="col-md-3 offset-md-2">{{ notification.date }}</p>
+<p class="col-md-3 offset-md-1">{{ notification.date }}</p>
 <p class="col-md-3">{{notification.notificationType}}</p>
 <p class="col-md-3">{{ notification.message }}</p>
+{% if notification.notificationType == "PIRSensor" %}
+<a class="col-md-2" href="{{notification.videoURL}}"> Download </a>
+
+{% endif %}
 </div>
 
 
