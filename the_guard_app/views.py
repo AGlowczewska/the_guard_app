@@ -84,7 +84,7 @@ def notifications(request, rasp_serial):
 
 def index(request):
     context = {}
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         rooms = user_rasps(request.user.username)
         context = {'rooms': rooms}
         # stream = db.child("sensors").stream(stream_handler)
